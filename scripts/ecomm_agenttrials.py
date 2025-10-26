@@ -26,10 +26,10 @@ try:
 except Exception:
     pass
 
-# Import the tool loop + handlers from your main.py
+# Importing the tool loop + handlers from main.py
 from main import run_agent_loop, python_expression_tool, submit_answer_tool
 
-# Your task + grader
+# task + grader
 from tasks.ecomm_preprocess import sampling_taskdata as prepare_task_data, describe_task
 from grader.ecomm_grader import grading
 
