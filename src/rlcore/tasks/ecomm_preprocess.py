@@ -10,10 +10,9 @@ def sampling_taskdata(sample_size = 1000, seed=None):
     """Selects randomly 1000 samples from the original dataset"""
     if not os.path.exists(source_path):
         raise FileNotFoundError(
-            f"{source_path}" not found. Please use the following link to access the data" 
+            f"{source_path} not found. Please use the following link to access the data "
             "https://www.kaggle.com/datasets/carrie1/ecommerce-data" 
-            "and save it under /data/"
-        )
+            "and save it under /data/")
     
     df = pd.read_csv(source_path, encoding="ISO-8859-1")
     if seed is not None:
