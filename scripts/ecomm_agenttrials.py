@@ -37,7 +37,7 @@ from grader.ecomm_grader import grading
 OUT_DIR = "out"
 CLEANED_PATH = os.path.join(OUT_DIR, "cleaned.csv")
 
-
+'''
 def build_prompt() -> str:
     # Prompt that exactly mirrors the checks enforced by the grader (8 checks)
     return f"""
@@ -67,7 +67,34 @@ IMPORTANT:
 • Do not print the entire DataFrame; printing is optional (small summaries ok).
 • Your final step must be a submit_answer tool call with the file path shown above.
 """
+'''
+def build_prompt() -> str:
+    return f"""
+You are given a CSV file at: data/ecomm_datasample.csv
 
+Goal:
+Prepare the data for downstream modeling by cleaning it and engineering essential features.
+
+Correctness conditions (this is how your output will be evaluated):
+• All rows must have a valid CustomerID (no missing).
+• InvoiceDate must be a proper datetime type.
+• Quantity and UnitPrice must be strictly positive (invalid rows removed).
+• Include these features in the final data:
+  - Invoice_Year, Invoice_Month (derived from InvoiceDate)
+  - Revenue = Quantity * UnitPrice
+  - Delivery_Time = (DeliveryDate - InvoiceDate) in days; if DeliveryDate is absent or missing,
+    set Delivery_Time = 0.
+
+What to do:
+• Use the python_expression tool to write Python (pandas) that:
+  - reads "data/ecomm_datasample.csv",
+  - applies the above requirements,
+  - writes the final cleaned DataFrame to "{CLEANED_PATH}" (create the 'out' folder if needed).
+
+Submission:
+• After saving the file, call the submit_answer tool with:
+  {{ "answer": "{CLEANED_PATH}" }}
+"""
 
 def build_tools_and_handlers():
     # Tools descriptors must match what main.run_agent_loop expects (same schemas)
@@ -104,7 +131,7 @@ def build_tools_and_handlers():
 
 
 async def run_one_trial(trial_idx: int) -> tuple[float, bool]:
-    print(f"\n🚀 Trial {trial_idx}")
+    print(f"\n Trial {trial_idx}")
 
     # 1) Prepare fresh sample + reference
     ref_df = prepare_task_data(sample_size=1000)  # saves data/ecomm_datasample.csv
@@ -141,8 +168,12 @@ async def run_one_trial(trial_idx: int) -> tuple[float, bool]:
         return 0.0, False
 
     reward = grading(df_clean, ref_df)
-    success = reward >= 0.6  # 5/8 checks
-    print(f"{'✓' if success else '✗'} Trial {trial_idx} → Reward={reward}")
+    #success = reward >= 0.6  # 5/8 checks
+    #success = reward >= 0.875   #8/8 checks - tighten the grader tolerance
+    #print(f"{'✓' if success else '✗'} Trial {trial_idx} → Reward={reward}")
+    SUCCESS_THRESHOLD = 0.875
+    success = reward >= SUCCESS_THRESHOLD
+    print(f"{'✓' if success else '✗'} Trial {trial_idx} → Reward={reward} (threshold={SUCCESS_THRESHOLD})")
     return reward, success
 
 

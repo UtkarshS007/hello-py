@@ -50,6 +50,7 @@ def sampling_taskdata(sample_size: int = 1000, seed: int | None = None) -> pd.Da
     return sample
 
 def describe_task():
+    '''
     return(
         "TASK: Clean and engineer features from retail transactions.\n"
         "Steps:\n"
@@ -61,5 +62,18 @@ def describe_task():
         "   - Delivery_Time = DeliveryDate - InvoiceDate (if DeliveryDate exists)\n"
         "4. Return cleaned DataFrame ready for grading."
     )    
-
-
+    '''
+    return (
+        "TASK: Prepare a retail transactions CSV for downstream modeling by cleaning it and "
+        "engineering essential features.\n\n"
+        "Correctness conditions used for evaluation:\n"
+        "• All rows must have a valid CustomerID (no missing).\n"
+        "• InvoiceDate must be parsed as a datetime type.\n"
+        "• Quantity and UnitPrice must be strictly positive (remove invalid rows).\n"
+        "• Include the following features derived from the data:\n"
+        "  - Invoice_Year, Invoice_Month (from InvoiceDate)\n"
+        "  - Revenue = Quantity * UnitPrice\n"
+        "  - Delivery_Time = (DeliveryDate - InvoiceDate) in days; if DeliveryDate is absent or "
+        "    missing, set Delivery_Time = 0.\n"
+        "Return the cleaned DataFrame with these features."
+    )

@@ -269,6 +269,17 @@ async def main(concurrent: bool = True):
     print(f"  Failed: {num_runs - successes}/{num_runs}")
     print(f"  Pass Rate: {pass_rate:.1f}%")
     print(f"{'=' * 60}")
+    
+    '''
+    pass_rate = round(100 * successes / max(num_trials, 1), 1)
+    print("\n" + "=" * 60)
+    print(f"Trials: {num_trials}")
+    print(f"Passed: {successes}/{num_trials}")
+    print(f"Average Reward: {avg_reward}")
+    print(f"Pass Rate (reward>={SUCCESS_THRESHOLD}): {pass_rate}%")
+    print("=" * 60)
+    '''
+
 
 
 if __name__ == "__main__":
