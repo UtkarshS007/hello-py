@@ -9,17 +9,13 @@ load_dotenv(find_dotenv())
 from anthropic import AsyncAnthropic
 from anthropic.types import MessageParam, ToolUnionParam
 
-load_dotenv()
-
 class PythonExpressionToolResult(TypedDict):
     result: Any
     error: str | None
 
-
 class SubmitAnswerToolResult(TypedDict):
     answer: Any
     submitted: bool
-
 
 def python_expression_tool(expression: str) -> PythonExpressionToolResult:
     """
@@ -37,13 +33,11 @@ def python_expression_tool(expression: str) -> PythonExpressionToolResult:
     except Exception as e:
         return {"result": None, "error": str(e)}
 
-
 def submit_answer_tool(answer: Any) -> SubmitAnswerToolResult:
     """
     Tool for submitting the final answer.
     """
     return {"answer": answer, "submitted": True}
-
 
 async def run_agent_loop(
     prompt: str,
@@ -279,8 +273,6 @@ async def main(concurrent: bool = True):
     print(f"Pass Rate (reward>={SUCCESS_THRESHOLD}): {pass_rate}%")
     print("=" * 60)
     '''
-
-
 
 if __name__ == "__main__":
     # Set to True for concurrent execution, False for sequential execution
