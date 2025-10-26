@@ -3,10 +3,13 @@ import json
 from contextlib import redirect_stdout
 from io import StringIO
 from typing import Any, Callable, TypedDict
-
+import os
+import dotenv
+from dotenv import load_dotenv
 from anthropic import AsyncAnthropic
 from anthropic.types import MessageParam, ToolUnionParam
 
+load_dotenv()
 
 class PythonExpressionToolResult(TypedDict):
     result: Any

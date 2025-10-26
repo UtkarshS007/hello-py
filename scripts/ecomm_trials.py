@@ -9,7 +9,7 @@ from tasks.ecomm_preprocess import sampling_taskdata, describe_task
 from tools.ecomm_tools import preprocess
 from grader.ecomm_grader import grading
 
-def trials(trial_num):
+def trials(trial_num: int) -> float:
     print(f"\n Running Trial {trial_num}")
     df_raw = sampling_taskdata(sample_size=1000)
     ref_df = df_raw.copy()
@@ -17,7 +17,7 @@ def trials(trial_num):
     reward = grading(cleaned_df, ref_df)
     return reward
 
-def main(num_trials=5):
+def main(num_trials: int=5) -> None:
     print(describe_task())
     rewards = [trials(i+1) for i in range(num_trials)]
     avg_reward = round(sum(rewards)/len(rewards), 2)
