@@ -17,4 +17,10 @@ output/
 .vscode/
 
 #Anthropic Key
+
 .env
+
+#dataset
+
+*.csv
+data/samples/

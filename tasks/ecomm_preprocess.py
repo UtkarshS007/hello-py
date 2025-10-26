@@ -2,11 +2,28 @@
 
 import pandas as pd
 import os
+from glob import glob
+from datetime import datetime
 
-sampledata_path = "C:\Projects\hello-py\data\ecomm_datasample.csv"
-source_path = "C:\Projects\hello-py\data\ecomm_data.csv"    # original data path 
 
-def sampling_taskdata(sample_size = 1000, seed=None):
+data_dir = "data"
+sampledata_path = os.path.join(data_dir, "ecomm_datasample.csv")
+source_path = os.path.join(data_dir, "ecomm_data.csv")    # original data path
+samples_dir = os.path.join(data_dir, "samples") 
+
+keep_last_n = 5   #aiming to keep 5 archived samples
+
+def old_arch_del():
+    os.makedirs(samples_dir, exist_ok=True)
+    files = sorted(glob(os.path.join(samples_dir, "ecomm_datasample_*.csv")))
+    if len(files) > keep_last_n:
+        for f in files[: len(files) - keep_last_n]:
+            try:
+                os.remove(f)
+            except OSError:
+                pass
+
+def sampling_taskdata(sample_size: int = 1000, seed: int | None = None) -> pd.DataFrame:
     """Selects randomly 1000 samples from the original dataset"""
     if not os.path.exists(source_path):
         raise FileNotFoundError(
@@ -14,15 +31,23 @@ def sampling_taskdata(sample_size = 1000, seed=None):
             "https://www.kaggle.com/datasets/carrie1/ecommerce-data" 
             "and save it under /data/")
     
+    os.makedirs(data_dir, exist_ok=True)
+    os.makedirs(samples_dir, exist_ok=True)
+
     df = pd.read_csv(source_path, encoding="ISO-8859-1")
-    if seed is not None:
-        df = df.sample(n=sample_size, random_state=seed)
-    else:
-        df = df.sample(n=sample_size, random_state=pd.Timestamp.now().value % 2**32)
-    os.makedirs("data", exist_ok=True)
-    df.to_csv(sampledata_path, index=False)
-    print(f"Sample size of {sample_size} observations creates at {sampledata_path}")
-    return df
+    rs = seed if seed is not None else (pd.Timestamp.now().value % 2**32)
+    sample = df.sample(n=sample_size, random_state=rs)
+
+    sample.to_csv(sampledata_path, index=False)
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    archive_path = os.path.join(samples_dir, f"ecomm_datasample_{ts}.csv")
+    sample.to_csv(archive_path, index=False)
+
+    old_arch_del()
+
+    print(f"Latest Sample -> {sampledata_path}")
+    print(f"Archived copy -> {archive_path}")
+    return sample
 
 def describe_task():
     return(
