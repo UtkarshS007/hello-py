@@ -19,7 +19,7 @@ import pandas as pd
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
-# Load env (so ANTHROPIC_API_KEY from .env works even if main.py doesn't load it)
+# using this as a failsafe(so ANTHROPIC_API_KEY from .env works even if main.py doesn't load it)
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -97,7 +97,6 @@ Submission:
 """
 
 def build_tools_and_handlers():
-    # Tools descriptors must match what main.run_agent_loop expects (same schemas)
     tools = [
         {
             "name": "python_expression",
@@ -133,7 +132,7 @@ def build_tools_and_handlers():
 async def run_one_trial(trial_idx: int) -> tuple[float, bool]:
     print(f"\n Trial {trial_idx}")
 
-    # 1) Prepare fresh sample + reference
+    # 1) Preparing fresh sample + reference
     ref_df = prepare_task_data(sample_size=1000)  # saves data/ecomm_datasample.csv
     os.makedirs(OUT_DIR, exist_ok=True)
     if os.path.exists(CLEANED_PATH):
@@ -146,7 +145,7 @@ async def run_one_trial(trial_idx: int) -> tuple[float, bool]:
     prompt = build_prompt()
     tools, handlers = build_tools_and_handlers()
 
-    # 3) Run the agent loop (uses Anthropic model via AsyncAnthropic inside main.run_agent_loop)
+    # 3) Running the agent loop (uses Anthropic model via AsyncAnthropic inside main.run_agent_loop)
     submitted = await run_agent_loop(
         prompt=prompt,
         tools=tools,
@@ -156,7 +155,7 @@ async def run_one_trial(trial_idx: int) -> tuple[float, bool]:
         verbose=False,
     )
 
-    # 4) Validate the submitted artifact path and grade
+    # 4) Validating the submitted artifact path and grade
     if not (isinstance(submitted, str) and os.path.exists(submitted)):
         print("✗ No valid file path submitted; reward = 0.0")
         return 0.0, False
@@ -168,7 +167,7 @@ async def run_one_trial(trial_idx: int) -> tuple[float, bool]:
         return 0.0, False
 
     reward = grading(df_clean, ref_df)
-    #success = reward >= 0.6  # 5/8 checks
+    #success = reward >= 0.6  # 5/8 checks - Was giving a higher success ratio
     #success = reward >= 0.875   #8/8 checks - tighten the grader tolerance
     #print(f"{'✓' if success else '✗'} Trial {trial_idx} → Reward={reward}")
     SUCCESS_THRESHOLD = 0.875
